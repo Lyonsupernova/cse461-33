@@ -12,8 +12,10 @@ public class Client {
     public static void main(String[] args)  {
         try {
             // Stage A: send the udp packets with string "hello world"
+            System.out.println("Connecting to the server...");
             DatagramSocket socket = new DatagramSocket();
             InetAddress address = InetAddress.getByName(HOSTNAME);
+            System.out.println("Stage A running...");
             String sendString = "hello world\0";
 
             // question: for the helloworld packet, what's the psecret, and do we need to set the header?
@@ -22,7 +24,7 @@ public class Client {
             // length: the packet length
             // address: the ip address of attu2.cs.washington.edu
             // port: the port number listen to
-            DatagramPacket packet = new DatagramPacket(sendBuffer, 12, address, PORTNUMBER);
+            DatagramPacket packet = new DatagramPacket(sendBuffer, sendBuffer.length, address, PORTNUMBER);
             socket.send(packet);
 
             // receive the response packets from the server
@@ -47,6 +49,7 @@ public class Client {
             // Stage B
             // receive the ack number from the server
             // wait 0.5s
+            System.out.println("Stage B running");
             socket.setSoTimeout(500);
             while (send < num) {
                 // change the send buffer to be the structure with first 4 bytes representing the
@@ -58,6 +61,8 @@ public class Client {
                     // the ack received, size should be 4 + 12 = 16 bytes
                     receiveBuffer = new byte[HEADERSPACE + 4];
                     socket.receive(new DatagramPacket(receiveBuffer, receiveBuffer.length));
+                    send++;
+                    System.out.println(send);
                 } catch (SocketTimeoutException e) {
                     System.out.println("timeout! ACK not receive, resending...");
                     continue;
@@ -79,6 +84,7 @@ public class Client {
             // Stage C: it handles the tcp socket in stage c and build a connection socket using tcp,
             // the parameters are host address and the tcp port number. It basically extract the
             // information in the packet.
+            System.out.println("Stage C running...");
             Socket socketTCP = new Socket(address, tcpPort);
             InputStream in = socketTCP.getInputStream();
             OutputStream out = socketTCP.getOutputStream();
@@ -96,6 +102,7 @@ public class Client {
 
             // Stage D: tcp send num2 payloads and the length of payload is len2,
             // all of the content of the payload are c.
+            System.out.println("Stage D running...");
             sendBuffer = new byte[len2];
             Arrays.fill(sendBuffer, (byte) c);
             for (int i = 0; i < num2; i++) {

@@ -237,8 +237,9 @@ public class ServerThread extends Thread{
         byte[] c1send_buffer = bufferCreate(c1payload, secretC, STEP2);
         // send to client
         OutputStream output = socket.getOutputStream();
-        PrintWriter writer = new PrintWriter(output, true);
-        writer.println("hello");
+        output.write(c1send_buffer);
+//        PrintWriter writer = new PrintWriter(output, true);
+//        writer.println("hello");
         return len2;
     }
 

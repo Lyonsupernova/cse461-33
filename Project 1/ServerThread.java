@@ -19,7 +19,9 @@ public class ServerThread extends Thread{
 
     protected String thread_name = null;
     protected DatagramSocket socket = null;
+    protected DatagramPacket packet = null;
     protected Random rand = null;
+    protected byte[] receive_buffer = new byte[1024];
 
     public static final int PORT_NUM = 12235;
     public static final int HEADERSPACE = 12;
@@ -28,12 +30,10 @@ public class ServerThread extends Thread{
     // Student number : 1836832
     public static final short STUDENT_NUM = 832;
 
-    public ServerThread() throws IOException {
-        this("ServerThread");
-    }
-
-    public ServerThread(String name) throws IOException {
+    public ServerThread(String name, DatagramPacket packet, byte[] byteBuffer) throws IOException {
         this.thread_name = name;
+        this.packet = packet;
+        this.receive_buffer = byteBuffer;
         this.socket = new DatagramSocket(PORT_NUM);
         this.rand = new Random();
 
@@ -58,15 +58,7 @@ public class ServerThread extends Thread{
             // receiving packet
             System.out.print("Stage A running...");
             //byte[] receive_buffer = new byte[HEADERSPACE + "hello world\0".length()];
-            byte[] receive_buffer = new byte[1024];
-            DatagramPacket packet = new DatagramPacket(receive_buffer, receive_buffer.length);
-            try {
-                socket.receive(packet);
-            } catch (SocketTimeoutException e) {
-                System.out.println("    Stage a1 socket time out");
-                socket.close();
-                return;
-            }
+
             // return false if header is invalid
             if (!verifyHeader(receive_buffer, "hello world\0".length(), 0, STEP1, STUDENT_NUM)) {
                 socket.close();

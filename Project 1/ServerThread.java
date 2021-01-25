@@ -84,6 +84,7 @@ public class ServerThread extends Thread{
             // send packet
             InetAddress client_addr = packet.getAddress();
             int client_port = packet.getPort();
+            System.out.println("    client port a2 = " + client_port);
             packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
             socket.send(packet);
             System.out.println("Stage A finished...\n\n");
@@ -172,7 +173,7 @@ public class ServerThread extends Thread{
             send_buffer = bufferCreate(payload_b2, secretB, STEP2);
             client_addr = packet.getAddress();
             client_port = packet.getPort();
-            System.out.println("    client port = " + client_port);
+            System.out.println("    client port b2 = " + client_port);
             packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
             socket.send(packet);
             System.out.println("Stage B finished...\n\n");

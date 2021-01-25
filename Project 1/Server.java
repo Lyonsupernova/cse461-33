@@ -15,18 +15,15 @@ public class Server {
         try {
            DatagramSocket udp_socket = new DatagramSocket(PORTNUMBER);
            udp_socket.setSoTimeout(0);
-
             while (true) {
                 byte[] byteBuffer = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(byteBuffer, byteBuffer.length);
                 udp_socket.receive(packet);
                 new ServerThread("Thread " + name++, packet, byteBuffer).start();
             }
-
-        } catch (IOException e) {
-
+        } catch (IOException ex) {
+            System.out.println("Server exception: " + ex.getMessage());
+            ex.printStackTrace();
         }
-
-
     }
 }

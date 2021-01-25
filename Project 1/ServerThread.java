@@ -169,7 +169,7 @@ public class ServerThread extends Thread{
             System.out.println("    secret B = " + secretB);
             byteBuffer.putInt(tcp_port);
             byteBuffer.putInt(secretB);
-            byte[] payload_b2 = b.array();
+            byte[] payload_b2 = byteBuffer.array();
             send_buffer = bufferCreate(payload_b2, secretB, STEP2);
             client_addr = packet.getAddress();
             client_port = packet.getPort();

@@ -99,6 +99,8 @@ public class Client {
             int len2 = byteBuffer.getInt();
             int secretC = byteBuffer.getInt();
             char c = byteBuffer.getChar();
+            System.out.println("num2 : " + num2);
+            System.out.println("len2 : " + len2);
             System.out.println("Secret message c : " + secretC);
 
             // Stage D: tcp send num2 payloads and the length of payload is len2,

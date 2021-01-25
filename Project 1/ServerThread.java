@@ -36,6 +36,7 @@ public class ServerThread extends Thread{
         this.receive_buffer = byteBuffer;
         this.socket = socket;
         this.rand = new Random();
+        System.out.println(thread_name + " has started...");
         //??
         //this.serverSocket = new ServerSocket(PORT_NUM);
     }
@@ -97,9 +98,9 @@ public class ServerThread extends Thread{
 
             //  b1
             Boolean ack = false;
-            this.socket = new DatagramSocket(udp_port);
-            // 3 second
+            // wait no more than 3 second
             socket.setSoTimeout(3000);
+            this.socket = new DatagramSocket(udp_port);
             while (count < num) {
                 //receive_buffer = new byte[HEADERSPACE + 4 + payload_b1_len];  // 4: packet_id length
                 receive_buffer = new byte[1024];
@@ -141,7 +142,7 @@ public class ServerThread extends Thread{
                 }
                 if (!all_zero) {
                     socket.close();
-                    System.out.println("    Stage b1 payload fail");
+                    System.out.println("    Stage b1 Header fail");
                     return;
                 }
                 // ack
@@ -176,7 +177,7 @@ public class ServerThread extends Thread{
             System.out.println("Stage B finished...\n\n");
 
 
-            System.out.println("Stage C running...");
+            System.out.print("Stage C running...");
 
             System.out.println("Stage C finished...\n\n");
 
@@ -199,6 +200,7 @@ public class ServerThread extends Thread{
                 text = reader.readLine();
                 String reverseText = new StringBuilder(text).reverse().toString();
                 writer.println("Server: " + reverseText);
+
             } while (!text.equals("bye"));
             */
             serverSocket.close();
@@ -220,7 +222,9 @@ public class ServerThread extends Thread{
             packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
             socket.send(packet);
             System.out.println("Stage B finished...\n\n");
+
             System.out.print("Stage C running...");
+
             System.out.println("Stage C finished...\n\n");
             */
             // Step d1
@@ -257,19 +261,8 @@ public class ServerThread extends Thread{
     private static boolean verifyHeader(byte[] receiveBuffer, int payload_len,
                                         int psecret, short step, short studentNumber) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(receiveBuffer);
-        int a = 0, b = 0, c= 0, d = 0;
-        if ( (a = byteBuffer.getInt()) != payload_len || (b = byteBuffer.getInt()) != psecret ||
-                (c =  byteBuffer.getShort()) != step || (d = byteBuffer.getShort()) != studentNumber) {
-
-            System.out.println("len " + a);
-            System.out.println("psecret " + b);
-            System.out.println("step " + c);
-            System.out.println("studentNumber " + d);
-            System.out.println("len " + payload_len);
-            System.out.println("psecret " + psecret);
-            System.out.println("step " + step);
-            System.out.println("studentNumber " + studentNumber);
-
+        if (byteBuffer.getInt() != payload_len || byteBuffer.getInt() != psecret ||
+                byteBuffer.getShort() != step || byteBuffer.getShort() != studentNumber) {
             return false;
         }
         return true;

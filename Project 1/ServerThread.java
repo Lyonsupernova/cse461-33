@@ -162,14 +162,14 @@ public class ServerThread extends Thread{
             }
             // b2
             ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-            this.tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
+            tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
             int secretB = (int) (Math.random() * (500 - 5 + 1) + 5);            // [5, 500);
             System.out.println("    tcp port = " + tcp_port);
             System.out.println("    secret B = " + secretB);
             byteBuffer.putInt(tcp_port);
             byteBuffer.putInt(secretB);
             byte[] payload_b2 = b.array();
-            send_buffer = bufferCreate(payload_b2, secretA, STEP2);
+            send_buffer = bufferCreate(payload_b2, secretB, STEP2);
             client_addr = packet.getAddress();
             client_port = packet.getPort();
             packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
@@ -201,6 +201,7 @@ public class ServerThread extends Thread{
             */
 
             // Step c1
+            System.out.println("    tcp port = " + tcp_port);
             this.serverSocket = new ServerSocket(tcp_port);
             System.out.println("create server socket succeeded.");
             Socket tcp_socket = serverSocket.accept();

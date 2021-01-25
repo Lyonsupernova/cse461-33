@@ -209,10 +209,8 @@ public class ServerThread extends Thread{
             int num2 = stepc1(socket);
             System.out.println("Stage C finished...\n\n");
 
-            // Step d1
-            stepd1(socket, num2);
-
-            // Step d2
+            // Step d1 & d2
+            stepd(socket, num2);
 
 
             serverSocket.close();

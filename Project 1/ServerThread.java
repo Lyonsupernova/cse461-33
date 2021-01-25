@@ -201,12 +201,12 @@ public class ServerThread extends Thread{
             */
 
             // Step c1
-            System.out.println("    tcp port = " + tcp_port);
             this.serverSocket = new ServerSocket(tcp_port);
             System.out.println("create server socket succeeded.");
             Socket tcp_socket = serverSocket.accept();
             System.out.println("Accept tcp socket succeeded.");
             int len2 = stepc1(tcp_socket);
+            System.out.println("len2 = " + len2);
             System.out.println("Stage C finished...\n\n");
 
             // Step d1 & d2

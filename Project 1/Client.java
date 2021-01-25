@@ -40,7 +40,8 @@ public class Client {
             int len = receiveData[1];
             int udpPort = receiveData[2];
             int secretA = receiveData[3];
-
+            System.out.println("num is : " + num);
+            System.out.println("len is : " + len);
             System.out.println("UDP port number is : " + udpPort);
             System.out.println("Secret message A : " + secretA);
             // the packets already sent to server and get ACK back

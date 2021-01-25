@@ -22,38 +22,26 @@ public class ServerThread extends Thread{
     protected DatagramPacket packet = null;
     protected Random rand = null;
     protected byte[] receive_buffer = new byte[1024];
-
-    public static final int PORT_NUM = 12235;
+    // TODO: change to 12235
+    public static final int PORT_NUM = 38800;
     public static final int HEADERSPACE = 12;
     public static final short STEP1 = 1;
     public static final short STEP2 = 2;
     // Student number : 1836832
     public static final short STUDENT_NUM = 832;
 
-    public ServerThread(String name, DatagramPacket packet, byte[] byteBuffer) throws IOException {
+    public ServerThread(String name, DatagramPacket packet, byte[] byteBuffer, DatagramSocket socket) throws IOException {
         this.thread_name = name;
         this.packet = packet;
         this.receive_buffer = byteBuffer;
-        this.socket = new DatagramSocket(PORT_NUM);
+        this.socket = socket;
         this.rand = new Random();
-
         //??
-        this.serverSocket = new ServerSocket(PORT_NUM);
+        //this.serverSocket = new ServerSocket(PORT_NUM);
     }
 
     public void run() {
-        try (
-            Socket clientSocket = serverSocket.accept();
-
-            InputStream input = clientSocket.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-
-            OutputStream output = clientSocket.getOutputStream();
-            PrintWriter writer = new PrintWriter(output, true);
-
-        ) {
-            // 3 second
-            socket.setSoTimeout(3000);
+        try {
             // Stage A
             // receiving packet
             System.out.print("Stage A running...");
@@ -109,10 +97,12 @@ public class ServerThread extends Thread{
 
             //  b1
             Boolean ack = false;
+            // 3 second
+            //socket.setSoTimeout(3000);
+            this.socket = new DatagramSocket(udp_port);
             while (count < num) {
                 //receive_buffer = new byte[HEADERSPACE + 4 + payload_b1_len];  // 4: packet_id length
                 receive_buffer = new byte[1024];
-                this.socket = new DatagramSocket(udp_port);
                 packet = new DatagramPacket(receive_buffer, receive_buffer.length);
                 try {
                     socket.receive(packet);
@@ -122,13 +112,13 @@ public class ServerThread extends Thread{
                     return;
                 }
                 // return false if header is invalid
-                if (!verifyHeader(receive_buffer, payload_b1_len, secretA, STEP1, STUDENT_NUM)) {
+                if (!verifyHeader(receive_buffer, payload_b1_len + 4, secretA, STEP1, STUDENT_NUM)) {
                     socket.close();
                     System.out.println("    Stage b1 Header fail");
                     return;
                 }
                 // verify packet length
-                if (packet.getLength() != (HEADERSPACE + payload_b1_len)) {
+                if (packet.getLength() != (HEADERSPACE + payload_b1_len + 4)) {
                     socket.close();
                     System.out.println("    Stage b1 packet length fail");
                     return;
@@ -271,7 +261,7 @@ public class ServerThread extends Thread{
                                         int psecret, short step, short studentNumber) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(receiveBuffer);
         if (byteBuffer.getInt() != payload_len || byteBuffer.getInt() != psecret ||
-            byteBuffer.getShort() != step || byteBuffer.getShort() != studentNumber) {
+                byteBuffer.getShort() != step || byteBuffer.getShort() != studentNumber) {
             return false;
         }
         return true;

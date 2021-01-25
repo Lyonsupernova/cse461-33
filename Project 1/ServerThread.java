@@ -201,12 +201,13 @@ public class ServerThread extends Thread{
             */
 
             // Step c1
-            Socket socket = serverSocket.accept();
-            int len2 = stepc1(socket);
+            Socket tcp_socket = serverSocket.accept();
+            int len2 = stepc1(tcp_socket);
             System.out.println("Stage C finished...\n\n");
 
             // Step d1 & d2
-            stepd(socket, len2);
+            stepd(tcp_socket, len2);
+            System.out.println("Stage D finished...\n\n");
 
             serverSocket.close();
 
@@ -239,6 +240,7 @@ public class ServerThread extends Thread{
     }
 
     private static void stepd(Socket socket, int num2) throws  IOException {
+        // step d1
         InputStream input = socket.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
         byte[] line = reader.readLine().getBytes();    // reads a line of text
@@ -250,6 +252,8 @@ public class ServerThread extends Thread{
                 return;
             }
         }
+
+        // step d2
         ByteBuffer d2buffer = ByteBuffer.allocate(4);
         int secretD = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)
         OutputStream output = socket.getOutputStream();
@@ -307,7 +311,7 @@ public class ServerThread extends Thread{
             bufferSpace++;
         }
         ByteBuffer byteBuffer = ByteBuffer.allocate(bufferSpace + HEADERSPACE);
-        byteBuffer.putInt(buffer.length);
+        byteBuffer.putInt(bufferSpace);
         byteBuffer.putInt(pSecret);
         byteBuffer.putShort(step);
         byteBuffer.putShort(STUDENT_NUM);

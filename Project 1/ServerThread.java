@@ -37,6 +37,7 @@ public class ServerThread extends Thread{
         this.receive_buffer = byteBuffer;
         this.socket = socket;
         this.rand = new Random();
+        System.out.println(thread_name + " has started...");
         //??
         this.serverSocket = new ServerSocket(PORT_NUM);
     }
@@ -98,8 +99,8 @@ public class ServerThread extends Thread{
 
             //  b1
             Boolean ack = false;
-            // 3 second
-            //socket.setSoTimeout(3000);
+            // wait no more than 3 second
+            socket.setSoTimeout(3000);
             this.socket = new DatagramSocket(udp_port);
             while (count < num) {
                 //receive_buffer = new byte[HEADERSPACE + 4 + payload_b1_len];  // 4: packet_id length

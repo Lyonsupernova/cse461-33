@@ -5,7 +5,8 @@ import java.util.Arrays;
 
 public class Client {
     public static final String HOSTNAME = "attu2.cs.washington.edu";
-    public static final int PORTNUMBER = 12235;
+    // TODO: change to 12235
+    public static final int PORTNUMBER = 38800;
     public static final int HEADERSPACE = 12;
     public static final short STEP1 = 1;
     public static final int PAYLOAD = 16;
@@ -100,7 +101,6 @@ public class Client {
             char c = byteBuffer.getChar();
             System.out.println("Secret message c : " + secretC);
 
-
             // Stage D: tcp send num2 payloads and the length of payload is len2,
             // all of the content of the payload are c.
             System.out.println("Stage D running...");
@@ -125,10 +125,7 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
-
 
     // this method is used for stage B, step b1. It will allocate space for the byte[] with packet_id
     // the first four bytes, and the rest of bytes are 0s.
@@ -158,6 +155,7 @@ public class Client {
         byteBuffer.getShort(); // step
         byteBuffer.getShort(); // last 3 digits of student number
     }
+
     // this method will allocate space for the header and the packet. The header consists of
     // payload length (4 bytes), the payload size doesn't include the length of header,
     // psecret (4 bytes), step (2 bytes) and student number (2 bytes), a total

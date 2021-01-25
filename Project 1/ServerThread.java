@@ -202,6 +202,7 @@ public class ServerThread extends Thread{
 
             // Step c1
             Socket tcp_socket = serverSocket.accept();
+            System.out.println("Accep tcp socket succeeded.");
             int len2 = stepc1(tcp_socket);
             System.out.println("Stage C finished...\n\n");
 
@@ -224,7 +225,7 @@ public class ServerThread extends Thread{
         int secretC = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)
         System.out.println("    num2: " + num2);
         System.out.println("    len2: " + len2);
-        System.out.println("    udp_port: " + tcp_port);
+        System.out.println("    tcp_port: " + tcp_port);
         System.out.println("    secretC: " + secretC);
         c1buffer.putInt(num2);          // num
         c1buffer.putInt(len2);          // len

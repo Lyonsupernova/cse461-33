@@ -190,7 +190,7 @@ public class ServerThread extends Thread{
             }
             read_buf = stageA.getBytes();
             System.out.println("Stage A message: " + Arrays.toString(read_buf));
-*/
+            */
             /*
             String text;
             do {

@@ -221,6 +221,34 @@ public class ServerThread extends Thread{
             } while (!text.equals("bye"));
             */
             serverSocket.close();
+
+            // Step c1
+            /*
+            ByteBuffer c1Buffer = ByteBuffer.allocate(8);
+            int num2 = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
+            int len2 = (int) (Math.random() * (500 - 5 + 1) + 5);            // [5, 500);
+            int secretC = 0;
+            c1Buffer.putInt(num2);
+            c1Buffer.putInt(len2);
+            c1Buffer.putInt(secretC);
+            c1Buffer.putChar('c');
+            byte[] payload_c2 = c1Buffer.array();
+            send_buffer = bufferCreate(payload_c2, secretA, STEP2);
+            client_addr = packet.getAddress();
+            client_port = packet.getPort();
+            packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
+            socket.send(packet);
+            System.out.println("Stage B finished...\n\n");
+
+            System.out.print("Stage C running...");
+
+            System.out.println("Stage C finished...\n\n");
+            */
+            // Step d1
+
+            // Step d2
+
+
         } catch (IOException ex) {
             System.out.println("Server exception: " + ex.getMessage());
             ex.printStackTrace();
@@ -271,5 +299,13 @@ public class ServerThread extends Thread{
         byteBuffer.putShort(STUDENT_NUM);
         byteBuffer.put(buffer);
         return byteBuffer.array();
+    }
+
+    private void sendThreeIntegers() {
+
+    }
+
+    private void respondSecretD() {
+
     }
 }

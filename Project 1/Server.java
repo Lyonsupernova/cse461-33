@@ -13,7 +13,7 @@ public class Server {
         ServerThread server2 = new ServerThread("B");
         server2.start();
         Thread.sleep(1000);
-
-
     }
+
+
 }

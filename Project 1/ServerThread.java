@@ -222,7 +222,7 @@ public class ServerThread extends Thread{
     }
 
     private static int stepc1(Socket socket) throws IOException {
-        ByteBuffer c1buffer = ByteBuffer.allocate(13);
+        ByteBuffer c1buffer = ByteBuffer.allocate(12);
         int num2 = (int) (Math.random() * (10 - 5 + 1) + 5);     // [5, 10)
         int len2 = (int) (Math.random() * (500 - 5 + 1) + 5);    // [5, 500)
         int secretC = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)

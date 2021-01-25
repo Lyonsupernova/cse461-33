@@ -168,7 +168,7 @@ public class Client {
             bufferSpace++;
         }
         ByteBuffer byteBuffer = ByteBuffer.allocate(bufferSpace + HEADERSPACE);
-        byteBuffer.putInt(buffer.length);
+        byteBuffer.putInt(bufferSpace);
         byteBuffer.putInt(pSecret);
         byteBuffer.putShort(step);
         byteBuffer.putShort(studentNumber);

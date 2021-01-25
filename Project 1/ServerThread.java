@@ -164,7 +164,7 @@ public class ServerThread extends Thread{
             }
             // b2
             ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-            int tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
+            tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
             int secretB = (int) (Math.random() * (500 - 5 + 1) + 5);            // [5, 500);
             byteBuffer.putInt(tcp_port);
             byteBuffer.putInt(secretB);

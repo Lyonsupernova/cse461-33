@@ -84,7 +84,6 @@ public class ServerThread extends Thread{
             // send packet
             InetAddress client_addr = packet.getAddress();
             int client_port = packet.getPort();
-            System.out.println("    client port a2 = " + client_port);
             packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
             socket.send(packet);
             System.out.println("Stage A finished...\n\n");
@@ -173,7 +172,6 @@ public class ServerThread extends Thread{
             send_buffer = bufferCreate(payload_b2, secretB, STEP2);
             client_addr = packet.getAddress();
             client_port = packet.getPort();
-            System.out.println("    client port b2 = " + client_port);
             packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
             socket.send(packet);
             System.out.println("Stage B finished...\n\n");
@@ -224,18 +222,17 @@ public class ServerThread extends Thread{
     }
 
     private static int stepc1(Socket socket) throws IOException {
-        ByteBuffer c1buffer = ByteBuffer.allocate(16);
+        ByteBuffer c1buffer = ByteBuffer.allocate(13);
         int num2 = (int) (Math.random() * (10 - 5 + 1) + 5);     // [5, 10)
         int len2 = (int) (Math.random() * (500 - 5 + 1) + 5);    // [5, 500)
         int secretC = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)
         System.out.println("    num2: " + num2);
         System.out.println("    len2: " + len2);
-        System.out.println("    tcp_port: " + tcp_port);
         System.out.println("    secretC: " + secretC);
         c1buffer.putInt(num2);          // num
         c1buffer.putInt(len2);          // len
-        c1buffer.putInt(tcp_port);     // udp_port
         c1buffer.putInt(secretC);      // secretA
+        c1buffer.putChar('c');
         byte[] c1payload = c1buffer.array();
         byte[] c1send_buffer = bufferCreate(c1payload, secretC, (short) 2);
         // send to client

@@ -20,10 +20,13 @@ public class ServerThread extends Thread{
     protected String thread_name = null;
     protected DatagramSocket socket = null;
     protected Random rand = null;
-    protected static int psecret;
 
     public static final int PORT_NUM = 12235;
     public static final int HEADERSPACE = 12;
+    public static final short STEP1 = 1;
+    public static final short STEP2 = 2;
+    // Student number : 1836832
+    public static final short STUDENT_NUM = 832;
 
     public ServerThread() throws IOException {
         this("ServerThread");
@@ -33,7 +36,6 @@ public class ServerThread extends Thread{
         this.thread_name = name;
         this.socket = new DatagramSocket(PORT_NUM);
         this.rand = new Random();
-        this.psecret = 0;
 
         //??
         this.serverSocket = new ServerSocket(PORT_NUM);
@@ -50,14 +52,35 @@ public class ServerThread extends Thread{
             PrintWriter writer = new PrintWriter(output, true);
 
         ) {
+            // 3 second
+            socket.setSoTimeout(3000);
             // Stage A
             // receiving packet
             System.out.print("Stage A running...");
-            byte[] receive_buffer = new byte[HEADERSPACE + "hello world\0".length()];
+            //byte[] receive_buffer = new byte[HEADERSPACE + "hello world\0".length()];
+            byte[] receive_buffer = new byte[1024];
             DatagramPacket packet = new DatagramPacket(receive_buffer, receive_buffer.length);
-            socket.receive(packet);
-            String result = new String(packet.getData(), HEADERSPACE, "hello world\0".length());
+            try {
+                socket.receive(packet);
+            } catch (SocketTimeoutException e) {
+                System.out.println("    Stage a1 socket time out");
+                socket.close();
+                return;
+            }
+            // return false if header is invalid
+            if (!verifyHeader(receive_buffer, "hello world\0".length(), 0, STEP1, STUDENT_NUM)) {
+                socket.close();
+                System.out.println("    Stage a1 Header fail");
+                return;
+            }
+            // verify packet length
+            if (packet.getLength() != (HEADERSPACE + 12)) {
+                socket.close();
+                System.out.println("    Stage a1 packet length fail");
+                return;
+            }
             // verify received message "hello world\0"
+            String result = new String(packet.getData(), HEADERSPACE, "hello world\0".length());
             if (!result.equals("hello world\0")) {
                 System.out.println("    Wrong message received in Stage A");
             } else {
@@ -95,17 +118,49 @@ public class ServerThread extends Thread{
             //  b1
             Boolean ack = false;
             while (count < num) {
-                receive_buffer = new byte[HEADERSPACE + 4 + payload_b1_len];  // 4: packet_id length
+                //receive_buffer = new byte[HEADERSPACE + 4 + payload_b1_len];  // 4: packet_id length
+                receive_buffer = new byte[1024];
                 this.socket = new DatagramSocket(udp_port);
                 packet = new DatagramPacket(receive_buffer, receive_buffer.length);
-                socket.receive(packet);
+                try {
+                    socket.receive(packet);
+                } catch (SocketTimeoutException e) {
+                    System.out.println("    Stage b1 socket time out");
+                    socket.close();
+                    return;
+                }
+                // return false if header is invalid
+                if (!verifyHeader(receive_buffer, payload_b1_len, secretA, STEP1, STUDENT_NUM)) {
+                    socket.close();
+                    System.out.println("    Stage b1 Header fail");
+                    return;
+                }
+                // verify packet length
+                if (packet.getLength() != (HEADERSPACE + payload_b1_len)) {
+                    socket.close();
+                    System.out.println("    Stage b1 packet length fail");
+                    return;
+                }
+
                 int[] payload_b1 = receiveHandler(receive_buffer, payload_b1_len / 4 + 1);
-                // verification
+                // verify payload
+                boolean all_zero = true;
                 System.out.println("    packet_id: " +  payload_b1[0]);
+                if (payload_b1[0] != count) {
+                    socket.close();
+                    System.out.println("    Stage b1 packet_id fail");
+                    return;
+                }
                 for (int i = 1; i < payload_b1.length; i++) {
                     if (payload_b1[i] != 0) {
                         System.out.println("    receive non-zero at index: " + count);
+                        all_zero = false;
                     }
+                }
+                if (!all_zero) {
+                    socket.close();
+                    System.out.println("    Stage b1 Header fail");
+                    return;
                 }
                 // ack
                 if (!ack) { // at lease one !ack
@@ -116,7 +171,7 @@ public class ServerThread extends Thread{
                     ByteBuffer acked_packet_id = ByteBuffer.allocate(4);
                     acked_packet_id.putInt(payload_b1[0]);
                     byte[] ack_payload = b.array();
-                    send_buffer = bufferCreate(ack_payload, psecret, (short) 1);
+                    send_buffer = bufferCreate(ack_payload, secretA, STEP2);
                     client_addr = packet.getAddress();
                     client_port = packet.getPort();
                     packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
@@ -131,7 +186,7 @@ public class ServerThread extends Thread{
             byteBuffer.putInt(tcp_port);
             byteBuffer.putInt(secretB);
             byte[] payload_b2 = b.array();
-            send_buffer = bufferCreate(payload_b2, psecret, (short) 1);
+            send_buffer = bufferCreate(payload_b2, secretA, STEP2);
             client_addr = packet.getAddress();
             client_port = packet.getPort();
             packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
@@ -186,14 +241,24 @@ public class ServerThread extends Thread{
 
     private static void headerHandler(ByteBuffer byteBuffer) {
         byteBuffer.getInt(); // payload_len
-        psecret = byteBuffer.getInt(); // psecret
+        byteBuffer.getInt(); // psecret
         byteBuffer.getShort(); // step
         byteBuffer.getShort(); // last 3 digits of student number
     }
 
+    // return true if header is good; otherwise, return false.
+    private static boolean verifyHeader(byte[] receiveBuffer, int payload_len,
+                                        int psecret, short step, short studentNumber) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(receiveBuffer);
+        if (byteBuffer.getInt() != payload_len || byteBuffer.getInt() != psecret ||
+            byteBuffer.getShort() != step || byteBuffer.getShort() != studentNumber) {
+            return false;
+        }
+        return true;
+    }
+
     private static byte[] bufferCreate(byte[] buffer, int pSecret, short step) {
-        // Student number : 1836832
-        short studentNumber = 832;
+
         // the alignment of the payload is 4, add padding bytes.
         int bufferSpace = buffer.length;
         while (bufferSpace % 4 != 0) {
@@ -203,7 +268,7 @@ public class ServerThread extends Thread{
         byteBuffer.putInt(buffer.length);
         byteBuffer.putInt(pSecret);
         byteBuffer.putShort(step);
-        byteBuffer.putShort(studentNumber);
+        byteBuffer.putShort(STUDENT_NUM);
         byteBuffer.put(buffer);
         return byteBuffer.array();
     }

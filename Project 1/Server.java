@@ -9,6 +9,7 @@ public class Server {
     public static int name = 1;
 
     public static void main(String[] args) {
+
         try {
             DatagramSocket udp_socket = new DatagramSocket(PORTNUMBER);
             udp_socket.setSoTimeout(0);

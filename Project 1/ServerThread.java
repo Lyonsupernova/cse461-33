@@ -38,7 +38,6 @@ public class ServerThread extends Thread{
         this.socket = socket;
         this.rand = new Random();
         //??
-        this.serverSocket = new ServerSocket(PORT_NUM);
     }
 
     public void run() {
@@ -201,6 +200,7 @@ public class ServerThread extends Thread{
             */
 
             // Step c1
+            this.serverSocket = new ServerSocket(tcp_port);
             Socket tcp_socket = serverSocket.accept();
             System.out.println("Accep tcp socket succeeded.");
             int len2 = stepc1(tcp_socket);

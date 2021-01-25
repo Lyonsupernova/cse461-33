@@ -126,7 +126,6 @@ public class ServerThread extends Thread{
                 int[] payload_b1 = receiveHandler(receive_buffer, payload_b1_len / 4 + 1);
                 // verify payload
                 boolean all_zero = true;
-                System.out.println("    packet_id: " +  payload_b1[0]);
                 if (payload_b1[0] != count) {
                     socket.close();
                     System.out.println("    Stage b1 packet_id fail");
@@ -145,10 +144,12 @@ public class ServerThread extends Thread{
                 }
                 // ack
                 if (!ack) { // at lease one !ack
+                    System.out.println("    Don't ack packet_id: " +  payload_b1[0]);
                     ack = true;
                     continue;
                 }
                 if (rand.nextBoolean()) {
+                    System.out.println("    Ack packet_id: " +  payload_b1[0]);
                     ByteBuffer acked_packet_id = ByteBuffer.allocate(4);
                     acked_packet_id.putInt(payload_b1[0]);
                     byte[] ack_payload = b.array();
@@ -158,6 +159,8 @@ public class ServerThread extends Thread{
                     packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
                     socket.send(packet);
                     count++;
+                } else {
+                    System.out.println("    Don't ack packet_id: " +  payload_b1[0]);
                 }
             }
             // b2
@@ -206,7 +209,6 @@ public class ServerThread extends Thread{
             Socket tcp_socket = serverSocket.accept();
             System.out.println("Accept tcp socket succeeded.");
             int len2 = stepc1(tcp_socket);
-            System.out.println("len2 = " + len2);
             System.out.println("Stage C finished...\n\n");
 
             // Step d1 & d2
@@ -238,8 +240,6 @@ public class ServerThread extends Thread{
         // send to client
         OutputStream output = socket.getOutputStream();
         output.write(c1send_buffer);
-//        PrintWriter writer = new PrintWriter(output, true);
-//        writer.println("hello");
         return len2;
     }
 

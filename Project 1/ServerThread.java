@@ -37,7 +37,6 @@ public class ServerThread extends Thread{
         this.receive_buffer = byteBuffer;
         this.socket = socket;
         this.rand = new Random();
-        //??
     }
 
     public void run() {
@@ -163,8 +162,10 @@ public class ServerThread extends Thread{
             }
             // b2
             ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-            tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
+            this.tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
             int secretB = (int) (Math.random() * (500 - 5 + 1) + 5);            // [5, 500);
+            System.out.println("    tcp port = " + tcp_port);
+            System.out.println("    secret B = " + secretB);
             byteBuffer.putInt(tcp_port);
             byteBuffer.putInt(secretB);
             byte[] payload_b2 = b.array();

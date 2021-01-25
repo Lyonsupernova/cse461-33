@@ -229,16 +229,16 @@ public class ServerThread extends Thread{
         System.out.println("    num2: " + num2);
         System.out.println("    len2: " + len2);
         System.out.println("    secretC: " + secretC);
-        c1buffer.putInt(num2);          // num
-        c1buffer.putInt(len2);          // len
-        c1buffer.putInt(secretC);      // secretA
+        c1buffer.putInt(num2);          // num2
+        c1buffer.putInt(len2);          // len2
+        c1buffer.putInt(secretC);      // secretC
         c1buffer.putChar('c');
         byte[] c1payload = c1buffer.array();
-        byte[] c1send_buffer = bufferCreate(c1payload, secretC, (short) 2);
+        byte[] c1send_buffer = bufferCreate(c1payload, secretC, STEP2);
         // send to client
         OutputStream output = socket.getOutputStream();
         PrintWriter writer = new PrintWriter(output, true);
-        writer.println(c1send_buffer);
+        writer.println("hello");
         return len2;
     }
 

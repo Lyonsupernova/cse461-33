@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class ServerThread extends Thread{
     //??
-    protected ServerSocket serverSocket = null;
+    protected static ServerSocket serverSocket = null;
     protected BufferedReader in = null;
 
     protected String thread_name = null;
@@ -29,6 +29,7 @@ public class ServerThread extends Thread{
     public static final short STEP2 = 2;
     // Student number : 1836832
     public static final short STUDENT_NUM = 832;
+    protected static int tcp_port;
 
     public ServerThread(String name, DatagramPacket packet, byte[] byteBuffer, DatagramSocket socket) throws IOException {
         this.thread_name = name;
@@ -37,7 +38,7 @@ public class ServerThread extends Thread{
         this.socket = socket;
         this.rand = new Random();
         //??
-        //this.serverSocket = new ServerSocket(PORT_NUM);
+        this.serverSocket = new ServerSocket(PORT_NUM);
     }
 
     public void run() {
@@ -163,7 +164,7 @@ public class ServerThread extends Thread{
             }
             // b2
             ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-            int tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
+            tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
             int secretB = (int) (Math.random() * (500 - 5 + 1) + 5);            // [5, 500);
             byteBuffer.putInt(tcp_port);
             byteBuffer.putInt(secretB);
@@ -178,7 +179,6 @@ public class ServerThread extends Thread{
 
             System.out.print("Stage C running...");
 
-            System.out.println("Stage C finished...\n\n");
 
             /*
             String stageA = null;
@@ -202,33 +202,19 @@ public class ServerThread extends Thread{
 
             } while (!text.equals("bye"));
             */
-            serverSocket.close();
 
             // Step c1
-            /*
-            ByteBuffer c1Buffer = ByteBuffer.allocate(8);
-            int num2 = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
-            int len2 = (int) (Math.random() * (500 - 5 + 1) + 5);            // [5, 500);
-            int secretC = 0;
-            c1Buffer.putInt(num2);
-            c1Buffer.putInt(len2);
-            c1Buffer.putInt(secretC);
-            c1Buffer.putChar('c');
-            byte[] payload_c2 = c1Buffer.array();
-            send_buffer = bufferCreate(payload_c2, secretA, STEP2);
-            client_addr = packet.getAddress();
-            client_port = packet.getPort();
-            packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
-            socket.send(packet);
-            System.out.println("Stage B finished...\n\n");
-
-            System.out.print("Stage C running...");
-
+            Socket socket = serverSocket.accept();
+            int num2 = stepc1(socket);
             System.out.println("Stage C finished...\n\n");
-            */
+
             // Step d1
+            stepd1(socket, num2);
 
             // Step d2
+
+
+            serverSocket.close();
 
 
         } catch (IOException ex) {
@@ -247,6 +233,41 @@ public class ServerThread extends Thread{
         }
 
         return res;
+    }
+
+    private static int stepc1(Socket socket) throws IOException {
+        ByteBuffer c1buffer = ByteBuffer.allocate(16);
+        int num2 = (int) (Math.random() * (10 - 5 + 1) + 5);     // [5, 10)
+        int len2 = (int) (Math.random() * (500 - 5 + 1) + 5);    // [5, 500)
+        int secretC = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)
+        System.out.println("    num2: " + num2);
+        System.out.println("    len2: " + len2);
+        System.out.println("    udp_port: " + tcp_port);
+        System.out.println("    secretC: " + secretC);
+        c1buffer.putInt(num2);          // num
+        c1buffer.putInt(len2);          // len
+        c1buffer.putInt(tcp_port);     // udp_port
+        c1buffer.putInt(secretC);      // secretA
+        byte[] c1payload = c1buffer.array();
+        byte[] c1send_buffer = bufferCreate(c1payload, secretC, (short) 2);
+        // send to client
+        OutputStream output = socket.getOutputStream();
+        PrintWriter writer = new PrintWriter(output, true);
+        writer.println(c1send_buffer);
+        return num2;
+    }
+
+    private static void stepd(Socket socket, int num2) throws  IOException {
+        InputStream input = socket.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+        String line = reader.readLine();    // reads a line of text
+        System.out.println("    line: " + line);
+        ByteBuffer d2buffer = ByteBuffer.allocate(4);
+        int secretD = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)
+        OutputStream output = socket.getOutputStream();
+        d2buffer.putInt(secretD);
+        PrintWriter writer = new PrintWriter(output, true);
+        writer.println(d2buffer);
     }
 
     private static void headerHandler(ByteBuffer byteBuffer) {

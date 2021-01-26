@@ -29,6 +29,7 @@ public class ServerThread extends Thread{
     public static final short STEP2 = 2;
     // Student number : 1836832
     public static final short STUDENT_NUM = 832;
+    public static final int LARGE_BUFFER_SIZE = 2048;
     private static int tcp_port;
 
     public ServerThread(String name, DatagramPacket packet, byte[] byteBuffer, DatagramSocket socket) throws IOException {
@@ -250,12 +251,11 @@ public class ServerThread extends Thread{
     private static void stepd(Socket socket, int[] param) throws  IOException {
         // step d1
         InputStream input = socket.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
         socket.setSoTimeout(50000);
         int num2 = param[0];
         int len2 = param[1];
         int secretC = param[2];
-        int c = param[3];
+        char c = (char) param[3];
         System.out.println("    num2: " + num2);
         System.out.println("    len2: " + len2);
         System.out.println("    secretC: " + secretC);
@@ -263,25 +263,27 @@ public class ServerThread extends Thread{
         int payload_d1_len = (len2 % 4 == 0) ? len2 : (len2 / 4 * 4 + 4);  // 4-byte alignment
 
         while (num2 > 0) {
-            byte[] line = reader.readLine().getBytes();    // reads a line of text
-            System.out.println("    line: " + line);
-            // return false if header is invalid
+            byte[] line = new byte[LARGE_BUFFER_SIZE];    // A large enough buffer to avoid bufferoverflow
+            int payload_len = line.length - HEADERSPACE;
+            input.read(line);
+
+            // Verify header size.
             if (!verifyHeader(line, payload_d1_len, secretC, STEP1, STUDENT_NUM)) {
                 socket.close();
-                System.out.println("    Stage d1 Header fail");
+                System.out.println("    Stage d1 header fail");
                 return;
             }
-            // verify packet length
-            if (line.length != (HEADERSPACE + payload_d1_len)) {
+            // Verify packet length
+            if (payload_len != payload_d1_len) {
                 socket.close();
-                System.out.println("    Stage d1 packet length fail");
+                System.out.println("    Stage d1 payload length fail");
                 return;
             }
-
-            int[] payload_d1 = receiveHandler(line, payload_d1_len / 4 + 1);
-            for (int i = 0; i < payload_d1.length; i++) {
-                if (payload_d1[i] != c) {
-                    System.out.println("    receive not \'" + (char) c + "\'");
+            ByteBuffer byteBuffer = ByteBuffer.wrap(line);
+            headerHandler(byteBuffer);
+            for (int i = 0; i < len2; i++) {
+                if (byteBuffer.getChar() != c) {
+                    System.out.println("    receive not \'" + c + "\'");
                     socket.close();
                     System.out.println("    Stage d1 payload fail");
                     return;
@@ -299,7 +301,6 @@ public class ServerThread extends Thread{
         byte[] d1send_buffer = bufferCreate(d2payload, secretD, STEP2);
         output.write(d1send_buffer);
     }
-
 
     private static int[] receiveHandler(byte[] receiveBuffer, int len) {
         int[] res = new int[len];

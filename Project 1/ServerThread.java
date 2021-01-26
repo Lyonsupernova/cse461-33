@@ -265,8 +265,6 @@ public class ServerThread extends Thread{
         while (num2 > 0) {
              byte[] line = new byte[payload_d1_len + HEADERSPACE];    // A large enough buffer to avoid bufferoverflow
              input.read(line);
-//            Reader in = new InputStreamReader(input,"ASCII");
-//            in.read(line);
 
             // Verify header size.
             if (!verifyHeader(line, payload_d1_len, secretC, STEP1, STUDENT_NUM)) {
@@ -276,10 +274,8 @@ public class ServerThread extends Thread{
             }
 
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);
+            headerHandler(byteBuffer);
             for (int i = 0; i < payload_d1_len; i++) {
-//                byte first = byteBuffer.get();
-//                byte second = byteBuffer.get();
-//                System.out.println(first + " " + second);
                 char cur = byteBuffer.getChar();
                 if (cur != c) {
                     System.out.println("    Expected \'" + (int) c + "\' but received \'" + (int) cur + "\' at index " + i);
@@ -296,6 +292,7 @@ public class ServerThread extends Thread{
         int secretD = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)
         OutputStream output = socket.getOutputStream();
         d2buffer.putInt(secretD);
+
         byte[] d2payload = d2buffer.array();
         byte[] d1send_buffer = bufferCreate(d2payload, secretD, STEP2);
         output.write(d1send_buffer);

@@ -167,6 +167,9 @@ public class ServerThread extends Thread{
                     System.out.println("    Don't ack packet_id: " +  payload_b1[0]);
                 }
             }
+
+            System.out.println("enter here");
+            
             // b2
             ByteBuffer byteBuffer = ByteBuffer.allocate(8);
             tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)

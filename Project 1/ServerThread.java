@@ -294,6 +294,7 @@ public class ServerThread extends Thread{
         // step d2
         ByteBuffer d2buffer = ByteBuffer.allocate(4);
         int secretD = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)
+        System.out.println("    secretD: " + secretD);
         OutputStream output = socket.getOutputStream();
         d2buffer.putInt(secretD);
 

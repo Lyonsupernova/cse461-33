@@ -108,12 +108,12 @@ public class Client {
             // all of the content of the payload are c.
             System.out.println("Stage D running...");
             int payload_d1_len = (len2 % 4 == 0) ? len2 : (len2 / 4 * 4 + 4);  // 4-byte alignment
-            sendBuffer = new byte[payload_d1_len];
             // sendBuffer = new byte[len2];
             ByteBuffer sendBuffer_d1 = ByteBuffer.wrap(sendBuffer);
-            for (int i = 0; i < len2 / 2; i++) {
+            for (int i = 0; i < payload_d1_len / 2; i++) {
                 sendBuffer_d1.putChar(c);
             }
+            sendBuffer = sendBuffer_d1.array();
             for (int i = 0; i < num2; i++) {
                 out.write(bufferCreate(sendBuffer, secretC, STEP1));
             }

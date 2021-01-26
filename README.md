@@ -1,7 +1,7 @@
 # CSE 461 - Group 33
 
 ## Project 1 Part 1
-### Members:
+Members:
 - 
 
 ## Project 1 Part 2

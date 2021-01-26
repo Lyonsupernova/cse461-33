@@ -17,7 +17,7 @@ public class Client {
             DatagramSocket socket = new DatagramSocket();
             InetAddress address = InetAddress.getByName(HOSTNAME);
             System.out.println("Stage A running...");
-            String sendString = "hello world\0";
+            String sendString = "hello\0";
 
             // question: for the helloworld packet, what's the psecret, and do we need to set the header?
             byte[] sendBuffer = bufferCreate(sendString.getBytes("UTF-8"), 0, STEP1);

@@ -50,13 +50,11 @@ public class ServerThread extends Thread{
 
             // return false if header is invalid
             if (!verifyHeader(receive_buffer, "hello world\0".length(), 0, STEP1, STUDENT_NUM)) {
-                socket.close();
                 System.out.println("    Stage a1 Header fail");
                 return;
             }
             // verify packet length
             if (packet.getLength() != (HEADERSPACE + 12)) {
-                socket.close();
                 System.out.println("    Stage a1 packet length fail");
                 return;
             }
@@ -64,7 +62,6 @@ public class ServerThread extends Thread{
             String result = new String(packet.getData(), HEADERSPACE, "hello world\0".length());
             if (!result.equals("hello world\0")) {
                 System.out.println("    Wrong message received in Stage A");
-                socket.close();
                 return;
             } else {
                 System.out.println("    Message Received: " + result);
@@ -168,8 +165,6 @@ public class ServerThread extends Thread{
                 }
             }
 
-            System.out.println("enter here");
-            
             // b2
             ByteBuffer byteBuffer = ByteBuffer.allocate(8);
             tcp_port = (int) (Math.random() * (65535 - 49152 + 1) + 49152); // Ephemeral port range [49152, 65535)
@@ -228,7 +223,6 @@ public class ServerThread extends Thread{
         } catch (IOException ex) {
             System.out.println("Server exception: " + ex.getMessage());
             ex.printStackTrace();
-            socket.close();
         }
     }
 

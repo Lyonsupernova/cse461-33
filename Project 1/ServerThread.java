@@ -64,6 +64,8 @@ public class ServerThread extends Thread{
             String result = new String(packet.getData(), HEADERSPACE, "hello world\0".length());
             if (!result.equals("hello world\0")) {
                 System.out.println("    Wrong message received in Stage A");
+                socket.close();
+                return;
             } else {
                 System.out.println("    Message Received: " + result);
             }
@@ -252,7 +254,7 @@ public class ServerThread extends Thread{
     private static void stepd(Socket socket, int[] param) throws  IOException {
         // step d1
         InputStream input = socket.getInputStream();
-        socket.setSoTimeout(50000);
+        socket.setSoTimeout(3000);
         int num2 = param[0];
         int len2 = param[1];
         int secretC = param[2];

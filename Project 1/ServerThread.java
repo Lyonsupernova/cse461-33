@@ -274,21 +274,27 @@ public class ServerThread extends Thread{
                 return;
             }
             // Verify packet length
-            if (payload_len != payload_d1_len) {
-                socket.close();
-                System.out.println("    Stage d1 payload length fail");
-                System.out.println("    Expected payload length = " + payload_d1_len + ", actual length = " + payload_len);
-                return;
-            }
+//            if (payload_len != payload_d1_len) {
+//                socket.close();
+//                System.out.println("    Stage d1 payload length fail");
+//                System.out.println("    Expected payload length = " + payload_d1_len + ", actual length = " + payload_len);
+//                return;
+//            }
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);
             headerHandler(byteBuffer);
-            for (int i = 0; i < len2; i++) {
+            for (int i = 0; i < payload_d1_len; i++) {
                 if (byteBuffer.getChar() != c) {
                     System.out.println("    receive not \'" + c + "\'");
                     socket.close();
                     System.out.println("    Stage d1 payload fail");
                     return;
                 }
+            }
+            // Verify packet length
+            if (byteBuffer.getChar() != 0) {
+                socket.close();
+                System.out.println("    Stage d1 payload length fail");
+                return;
             }
             num2--;
         }

@@ -259,7 +259,7 @@ public class ServerThread extends Thread{
         System.out.println("    num2: " + num2);
         System.out.println("    len2: " + len2);
         System.out.println("    secretC: " + secretC);
-        System.out.println("    char c: " + (char)c);
+        System.out.println("    char c: " + c);
         int payload_d1_len = (len2 % 4 == 0) ? len2 : (len2 / 4 * 4 + 4);  // 4-byte alignment
 
         while (num2 > 0) {
@@ -276,9 +276,9 @@ public class ServerThread extends Thread{
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);
             headerHandler(byteBuffer);
             for (int i = 0; i < payload_d1_len; i++) {
-                char cur = (char) (((int) byteBuffer.getChar()) & 0xFF);
+                char cur = byteBuffer.getChar();
                 if (cur != c) {
-                    System.out.println("    Expected \'" + c + "\' but received \'" + cur + "\' at index " + i);
+                    System.out.println("    Expected \'" + (int) c + "\' but received \'" + (int) cur + "\' at index " + i);
                     // socket.close();
                     System.out.println("    Stage d1 payload fail");
                     return;

@@ -238,7 +238,7 @@ public class ServerThread extends Thread{
         c1buffer.putInt(num2);          // num2
         c1buffer.putInt(len2);          // len2
         c1buffer.putInt(secretC);      // secretC
-        c1buffer.putChar('c');
+        c1buffer.putChar(c);
         byte[] c1payload = c1buffer.array();
         byte[] c1send_buffer = bufferCreate(c1payload, secretC, STEP2);
         // send to client

@@ -112,10 +112,10 @@ public class Client {
             // sendBuffer = new byte[len2];
             ByteBuffer sendBuffer_d1 = ByteBuffer.wrap(sendBuffer);
             for (int i = 0; i < payload_d1_len / 2; i++) {
-                sendBuffer_d1.putChar(c);
+                sendBuffer_d1.putChar('c');
             }
             sendBuffer = sendBuffer_d1.array();
-            for (int i = 0; i < num2 - 2; i++) {
+            for (int i = 0; i < num2; i++) {
                 out.write(bufferCreate(sendBuffer, secretC, STEP1));
             }
 

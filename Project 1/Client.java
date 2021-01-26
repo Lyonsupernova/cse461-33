@@ -4,12 +4,11 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class Client {
-    public static final String HOSTNAME = "attu2.cs.washington.edu";
+    public static final String HOSTNAME = "attu3.cs.washington.edu";
     // TODO: change to 12235
-    public static final int PORTNUMBER = 38800;
+    public static final int PORTNUMBER = 12235;
     public static final int HEADERSPACE = 12;
     public static final short STEP1 = 1;
-    public static final short STEP2 = 2;
     public static final int PAYLOAD = 16;
     public static void main(String[] args)  {
         try {
@@ -113,7 +112,7 @@ public class Client {
             // sendBuffer = new byte[len2];
             ByteBuffer sendBuffer_d1 = ByteBuffer.wrap(sendBuffer);
             for (int i = 0; i < payload_d1_len / 2; i++) {
-                sendBuffer_d1.putChar('c');
+                sendBuffer_d1.putChar(c);
             }
             sendBuffer = sendBuffer_d1.array();
             for (int i = 0; i < num2; i++) {

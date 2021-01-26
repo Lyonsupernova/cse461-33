@@ -24,7 +24,7 @@ public class ServerThread extends Thread{
     protected Random rand = null;
     protected byte[] receive_buffer = new byte[1024];
     // TODO: change to 12235
-    public static final int PORT_NUM = 38800;
+    public static final int PORT_NUM = 12235;
     public static final int HEADERSPACE = 12;
     public static final short STEP1 = 1;
     public static final short STEP2 = 2;

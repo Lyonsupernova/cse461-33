@@ -264,8 +264,8 @@ public class ServerThread extends Thread{
 
         while (num2 > 0) {
             byte[] line = new byte[LARGE_BUFFER_SIZE];    // A large enough buffer to avoid bufferoverflow
-            int payload_len = line.length - HEADERSPACE;
             input.read(line);
+            int payload_len = line.length - HEADERSPACE;
 
             // Verify header size.
             if (!verifyHeader(line, payload_d1_len, secretC, STEP1, STUDENT_NUM)) {
@@ -277,6 +277,7 @@ public class ServerThread extends Thread{
             if (payload_len != payload_d1_len) {
                 socket.close();
                 System.out.println("    Stage d1 payload length fail");
+                System.out.println("    Expected payload length = " + payload_d1_len + ", actual length = " + payload_len);
                 return;
             }
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);

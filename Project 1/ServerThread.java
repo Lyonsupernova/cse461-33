@@ -219,7 +219,6 @@ public class ServerThread extends Thread{
             stepd(tcp_socket, param);
             System.out.println("Stage D finished...\n\n");
             serverSocket.close();
-
         } catch (IOException ex) {
             System.out.println("Server exception: " + ex.getMessage());
             ex.printStackTrace();
@@ -249,7 +248,7 @@ public class ServerThread extends Thread{
         return param;
     }
 
-    private static void stepd(Socket socket, int[] param) throws  IOException {
+    private void stepd(Socket socket, int[] param) throws  IOException {
         // step d1
         InputStream input = socket.getInputStream();
         socket.setSoTimeout(3000);
@@ -270,6 +269,7 @@ public class ServerThread extends Thread{
             // Verify header size.
             if (!verifyHeader(line, payload_d1_len, secretC, STEP1, STUDENT_NUM)) {
                 socket.close();
+                this.serverSocket.close();
                 System.out.println("    Stage d1 header fail");
                 return;
             }
@@ -282,13 +282,13 @@ public class ServerThread extends Thread{
                     char cur = byteBuffer.getChar();
                     if (cur != c) {
                         System.out.println("    Expected \'" + (int) c + "\' but received \'" + (int) cur + "\' at index " + i);
-                        socket.close();
+                        this.serverSocket.close();
                         System.out.println("    Stage d1 payload fail");
                         return;
                     }
                 }
             } catch (BufferUnderflowException e){
-                socket.close();
+                this.serverSocket.close();
                 System.out.println("    Stage d1 payload length is too short");
             }
             num2--;

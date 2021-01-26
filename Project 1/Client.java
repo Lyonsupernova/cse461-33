@@ -115,7 +115,7 @@ public class Client {
                 sendBuffer_d1.putChar(c);
             }
             sendBuffer = sendBuffer_d1.array();
-            for (int i = 0; i < num2; i++) {
+            for (int i = 0; i < num2 - 2; i++) {
                 out.write(bufferCreate(sendBuffer, secretC, STEP1));
             }
 

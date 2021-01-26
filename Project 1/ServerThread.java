@@ -277,9 +277,9 @@ public class ServerThread extends Thread{
 
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);
             for (int i = 0; i < payload_d1_len; i++) {
-                byte first = byteBuffer.get();
-                byte second = byteBuffer.get();
-                System.out.println(first + " " + second);
+//                byte first = byteBuffer.get();
+//                byte second = byteBuffer.get();
+//                System.out.println(first + " " + second);
                 char cur = byteBuffer.getChar();
                 if (cur != c) {
                     System.out.println("    Expected \'" + (int) c + "\' but received \'" + (int) cur + "\' at index " + i);

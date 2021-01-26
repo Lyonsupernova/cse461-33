@@ -263,8 +263,10 @@ public class ServerThread extends Thread{
         int payload_d1_len = (len2 % 4 == 0) ? len2 : (len2 / 4 * 4 + 4);  // 4-byte alignment
 
         while (num2 > 0) {
-            byte[] line = new byte[payload_d1_len + HEADERSPACE];    // A large enough buffer to avoid bufferoverflow
-            input.read(line);
+             byte[] line = new byte[payload_d1_len + HEADERSPACE];    // A large enough buffer to avoid bufferoverflow
+             input.read(line);
+//            Reader in = new InputStreamReader(input,"ASCII");
+//            in.read(line);
 
             // Verify header size.
             if (!verifyHeader(line, payload_d1_len, secretC, STEP1, STUDENT_NUM)) {

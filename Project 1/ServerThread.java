@@ -277,8 +277,9 @@ public class ServerThread extends Thread{
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);
             headerHandler(byteBuffer);
             for (int i = 0; i < payload_d1_len; i++) {
-                if (byteBuffer.getChar() != c) {
-                    System.out.println("    receive not \'" + c + "\' at index " + i);
+                char cur = byteBuffer.getChar();
+                if (cur != c) {
+                    System.out.println("    Expected \'" + c + "\' but received \'" + cur + "\' at index " + i);
                     socket.close();
                     System.out.println("    Stage d1 payload fail");
                     return;

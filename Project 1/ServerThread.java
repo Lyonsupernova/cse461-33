@@ -90,7 +90,7 @@ public class ServerThread extends Thread{
 
 
             // Stage B
-            System.out.print("Stage B running...");
+            System.out.println("Stage B running...");
             int count = 0;
             int payload_b1_len = (len % 4 == 0) ? len : (len / 4 * 4 + 4);  // 4-byte alignment
 
@@ -177,6 +177,7 @@ public class ServerThread extends Thread{
             client_port = packet.getPort();
             packet = new DatagramPacket(send_buffer, send_buffer.length, client_addr, client_port);
             socket.send(packet);
+            socket.close();
             System.out.println("Stage B finished...\n\n");
 
 
@@ -208,13 +209,13 @@ public class ServerThread extends Thread{
             System.out.println("create server socket succeeded.");
             Socket tcp_socket = serverSocket.accept();
             System.out.println("Accept tcp socket succeeded.");
-            int len2 = stepc1(tcp_socket);
+            int[] param = stepc1(tcp_socket);
             System.out.println("Stage C finished...\n\n");
 
             // Step d1 & d2
-            stepd(tcp_socket, len2);
+            System.out.println("Stage D started...\n\n");
+            stepd(tcp_socket, param);
             System.out.println("Stage D finished...\n\n");
-
             serverSocket.close();
 
         } catch (IOException ex) {
@@ -223,11 +224,12 @@ public class ServerThread extends Thread{
         }
     }
 
-    private static int stepc1(Socket socket) throws IOException {
+    private static int[] stepc1(Socket socket) throws IOException {
         ByteBuffer c1buffer = ByteBuffer.allocate(14);
         int num2 = (int) (Math.random() * (10 - 5 + 1) + 5);     // [5, 10)
         int len2 = (int) (Math.random() * (500 - 5 + 1) + 5);    // [5, 500)
         int secretC = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)
+        char c = (char) ((int)(Math.random() * 256));
         System.out.println("    num2: " + num2);
         System.out.println("    len2: " + len2);
         System.out.println("    secretC: " + secretC);
@@ -240,21 +242,47 @@ public class ServerThread extends Thread{
         // send to client
         OutputStream output = socket.getOutputStream();
         output.write(c1send_buffer);
-        return len2;
+        int[] param = {num2, len2, secretC, (int) c};
+        return param;
     }
 
-    private static void stepd(Socket socket, int num2) throws  IOException {
+    private static void stepd(Socket socket, int[] param) throws  IOException {
         // step d1
         InputStream input = socket.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        byte[] line = reader.readLine().getBytes();    // reads a line of text
-        System.out.println("    line: " + line);
-        int[] payload_d1 = receiveHandler(line, line.length);
-        for (int i = 1; i < payload_d1.length; i++) {
-            if (payload_d1[i] != 0) {
-                System.out.println("    receive non-zero at index: " + i);
+        socket.setSoTimeout(3000);
+        int num2 = param[0];
+        int len2 = param[1];
+        int secretC = param[2];
+        int c = param[3];
+        int payload_d1_len = (len2 % 4 == 0) ? len2 : (len2 / 4 * 4 + 4);  // 4-byte alignment
+
+        while (num2 > 0) {
+            byte[] line = reader.readLine().getBytes();    // reads a line of text
+            System.out.println("    line: " + line);
+            // return false if header is invalid
+            if (!verifyHeader(line, payload_d1_len, secretC, STEP1, STUDENT_NUM)) {
+                socket.close();
+                System.out.println("    Stage d1 Header fail");
                 return;
             }
+            // verify packet length
+            if (line.length != (HEADERSPACE + payload_d1_len)) {
+                socket.close();
+                System.out.println("    Stage d1 packet length fail");
+                return;
+            }
+
+            int[] payload_d1 = receiveHandler(line, payload_d1_len / 4 + 1);
+            for (int i = 0; i < payload_d1.length; i++) {
+                if (payload_d1[i] != c) {
+                    System.out.println("    receive not \'" + (char) c + "\'");
+                    socket.close();
+                    System.out.println("    Stage d1 payload fail");
+                    return;
+                }
+            }
+            num2--;
         }
 
         // step d2
@@ -262,8 +290,9 @@ public class ServerThread extends Thread{
         int secretD = (int) (Math.random() * (500 - 5 + 1) + 5);// [5, 500)
         OutputStream output = socket.getOutputStream();
         d2buffer.putInt(secretD);
-        PrintWriter writer = new PrintWriter(output, true);
-        writer.println(d2buffer);
+        byte[] d2payload = d2buffer.array();
+        byte[] d1send_buffer = bufferCreate(d2payload, secretD, STEP2);
+        output.write(d1send_buffer);
     }
 
 

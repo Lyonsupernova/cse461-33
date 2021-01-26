@@ -1,6 +1,7 @@
 import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.*;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -275,19 +276,21 @@ public class ServerThread extends Thread{
 
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);
             headerHandler(byteBuffer);
-            // try {
-                for (int i = 0; i < payload_d1_len / 2; i++) {
+            try {
+                for (int i = 0; i < payload_d1_len; i++) {
                     // char cur = (char) byteBuffer.get();
                     char cur = byteBuffer.getChar();
                     if (cur != c) {
                         System.out.println("    Expected \'" + (int) c + "\' but received \'" + (int) cur + "\' at index " + i);
-                        // socket.close();
+                        socket.close();
                         System.out.println("    Stage d1 payload fail");
                         return;
                     }
                 }
-//            } catch (){
-//            }
+            } catch (BufferUnderflowException e){
+                socket.close();
+                System.out.println("    Stage d1 payload length is too short");
+            }
             num2--;
         }
 

@@ -9,6 +9,7 @@ public class Client {
     public static final int PORTNUMBER = 38800;
     public static final int HEADERSPACE = 12;
     public static final short STEP1 = 1;
+    public static final short STEP2 = 2;
     public static final int PAYLOAD = 16;
     public static void main(String[] args)  {
         try {

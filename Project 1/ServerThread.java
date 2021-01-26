@@ -283,7 +283,7 @@ public class ServerThread extends Thread{
                     if (cur != c) {
                         System.out.println("    Expected \'" + (int) c + "\' but received \'" + (int) cur + "\' at index " + i);
                         this.serverSocket.close();
-                        System.out.println("    Stage d1 payload fail");
+                        System.out.println("    Stage d1 payload content fail");
                         return;
                     }
                 }

@@ -277,7 +277,7 @@ public class ServerThread extends Thread{
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);
             headerHandler(byteBuffer);
             try {
-                for (int i = 0; i < payload_d1_len; i++) {
+                for (int i = 0; i < payload_d1_len/ 2; i++) {
                     // char cur = (char) byteBuffer.get();
                     char cur = byteBuffer.getChar();
                     if (cur != c) {

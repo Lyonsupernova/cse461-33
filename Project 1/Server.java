@@ -12,8 +12,8 @@ public class Server {
 
         try {
             DatagramSocket udp_socket = new DatagramSocket(PORTNUMBER);
-            udp_socket.setSoTimeout(0);
             while (true) {
+                udp_socket.setSoTimeout(0);
                 byte[] byteBuffer = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(byteBuffer, byteBuffer.length);
                 udp_socket.receive(packet);

@@ -107,7 +107,8 @@ public class Client {
             // Stage D: tcp send num2 payloads and the length of payload is len2,
             // all of the content of the payload are c.
             System.out.println("Stage D running...");
-            sendBuffer = new byte[len2];
+            int payload_d1_len = (len2 % 4 == 0) ? len2 : (len2 / 4 * 4 + 4);  // 4-byte alignment
+            sendBuffer = new byte[payload_d1_len];
             Arrays.fill(sendBuffer, (byte) c);
             for (int i = 0; i < num2; i++) {
                 out.write(bufferCreate(sendBuffer, secretC, STEP1));

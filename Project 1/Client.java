@@ -102,6 +102,7 @@ public class Client {
             System.out.println("num2 : " + num2);
             System.out.println("len2 : " + len2);
             System.out.println("Secret message c : " + secretC);
+            System.out.println("c: " + c);
 
             // Stage D: tcp send num2 payloads and the length of payload is len2,
             // all of the content of the payload are c.

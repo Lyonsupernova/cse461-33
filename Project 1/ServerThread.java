@@ -263,7 +263,7 @@ public class ServerThread extends Thread{
         int payload_d1_len = (len2 % 4 == 0) ? len2 : (len2 / 4 * 4 + 4);  // 4-byte alignment
 
         while (num2 > 0) {
-            byte[] line = new byte[LARGE_BUFFER_SIZE];    // A large enough buffer to avoid bufferoverflow
+            byte[] line = new byte[payload_d1_len + HEADERSPACE];    // A large enough buffer to avoid bufferoverflow
             input.read(line);
             int payload_len = line.length - HEADERSPACE;
 
@@ -273,13 +273,7 @@ public class ServerThread extends Thread{
                 System.out.println("    Stage d1 header fail");
                 return;
             }
-            // Verify packet length
-//            if (payload_len != payload_d1_len) {
-//                socket.close();
-//                System.out.println("    Stage d1 payload length fail");
-//                System.out.println("    Expected payload length = " + payload_d1_len + ", actual length = " + payload_len);
-//                return;
-//            }
+
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);
             headerHandler(byteBuffer);
             for (int i = 0; i < payload_d1_len; i++) {
@@ -289,12 +283,6 @@ public class ServerThread extends Thread{
                     System.out.println("    Stage d1 payload fail");
                     return;
                 }
-            }
-            // Verify packet length
-            if (byteBuffer.getChar() != 0) {
-                socket.close();
-                System.out.println("    Stage d1 payload length fail");
-                return;
             }
             num2--;
         }

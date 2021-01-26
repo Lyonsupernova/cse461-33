@@ -265,7 +265,6 @@ public class ServerThread extends Thread{
         while (num2 > 0) {
             byte[] line = new byte[payload_d1_len + HEADERSPACE];    // A large enough buffer to avoid bufferoverflow
             input.read(line);
-            int payload_len = line.length - HEADERSPACE;
 
             // Verify header size.
             if (!verifyHeader(line, payload_d1_len, secretC, STEP1, STUDENT_NUM)) {
@@ -277,10 +276,10 @@ public class ServerThread extends Thread{
             ByteBuffer byteBuffer = ByteBuffer.wrap(line);
             headerHandler(byteBuffer);
             for (int i = 0; i < payload_d1_len; i++) {
-                char cur = byteBuffer.getChar();
+                char cur = (char) (((int) byteBuffer.getChar()) & 0xFF);
                 if (cur != c) {
                     System.out.println("    Expected \'" + c + "\' but received \'" + cur + "\' at index " + i);
-                    socket.close();
+                    // socket.close();
                     System.out.println("    Stage d1 payload fail");
                     return;
                 }

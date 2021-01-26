@@ -45,7 +45,7 @@ public class ServerThread extends Thread{
         try {
             // Stage A
             // receiving packet
-            System.out.print("Stage A running...");
+            System.out.println("Stage A running...");
             //byte[] receive_buffer = new byte[HEADERSPACE + "hello world\0".length()];
 
             // return false if header is invalid
@@ -102,12 +102,12 @@ public class ServerThread extends Thread{
             Boolean ack = false;
             this.socket = new DatagramSocket(udp_port);
             // 3 second
-            socket.setSoTimeout(3000);
             while (count < num) {
                 //receive_buffer = new byte[HEADERSPACE + 4 + payload_b1_len];  // 4: packet_id length
                 receive_buffer = new byte[1024];
                 packet = new DatagramPacket(receive_buffer, receive_buffer.length);
                 try {
+                    socket.setSoTimeout(3000);
                     socket.receive(packet);
                 } catch (SocketTimeoutException e) {
                     System.out.println("    Stage b1 socket time out");
@@ -225,6 +225,7 @@ public class ServerThread extends Thread{
         } catch (IOException ex) {
             System.out.println("Server exception: " + ex.getMessage());
             ex.printStackTrace();
+            socket.close();
         }
     }
 

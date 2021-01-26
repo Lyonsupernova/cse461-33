@@ -233,6 +233,7 @@ public class ServerThread extends Thread{
         System.out.println("    num2: " + num2);
         System.out.println("    len2: " + len2);
         System.out.println("    secretC: " + secretC);
+        System.out.println("    char c: " + c);
         c1buffer.putInt(num2);          // num2
         c1buffer.putInt(len2);          // len2
         c1buffer.putInt(secretC);      // secretC
@@ -250,11 +251,15 @@ public class ServerThread extends Thread{
         // step d1
         InputStream input = socket.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        socket.setSoTimeout(3000);
+        socket.setSoTimeout(50000);
         int num2 = param[0];
         int len2 = param[1];
         int secretC = param[2];
         int c = param[3];
+        System.out.println("    num2: " + num2);
+        System.out.println("    len2: " + len2);
+        System.out.println("    secretC: " + secretC);
+        System.out.println("    char c: " + (char)c);
         int payload_d1_len = (len2 % 4 == 0) ? len2 : (len2 / 4 * 4 + 4);  // 4-byte alignment
 
         while (num2 > 0) {

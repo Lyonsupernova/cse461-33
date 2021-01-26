@@ -4,8 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class Server {
-    // TODO: change to 12235
-    public static final int PORTNUMBER = 38800;
+    public static final int PORTNUMBER = 12235;
     public static int name = 1;
 
     public static void main(String[] args) {

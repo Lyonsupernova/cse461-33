@@ -4,7 +4,6 @@
 # which is based on of_tutorial by James McCauley
 
 
-from socket import IPPROTO_ICMP, NETLINK_ARPD
 from pox.core import core
 import pox.openflow.libopenflow_01 as of
 
@@ -30,29 +29,31 @@ class Firewall (object):
     msg_icmp = of.ofp_flow_mod()
     # set the protocol as icmp
     msg_icmp.match.nw_proto = 1
+    msg_icmp.priority = 3
     # set the address as ipv4
-    msg_icmp.match._dl_type = 0x0800
+    msg_icmp.match.dl_type = 0x0800
     # send action
     # flooding the message to all ports
-    out_action = of.ofp_action_output(port = of.OFPP_FLOOD)
-    # execute action
-    msg_icmp.action.append(out_action)
+    msg_icmp.actions.append(of.ofp_action_output(port = of.OFPP_FLOOD))
     # send message to switch
     self.connection.send(msg_icmp)
 
 
     msg_arp = of.ofp_flow_mod()
     # set the protocol as ARP
-    msg_arp.match._dl_type = 0x0806
+    msg_arp.match.dl_type = 0x0806
     # send action
     # flooding the message to all ports
-    out_action = of.ofp_action_output(port = of.OFPP_FLOOD)
-    # execute action
-    msg_arp.action.append(out_action)
+    msg_arp.priority = 2
+    msg_arp.actions.append(of.ofp_action_output(port = of.OFPP_FLOOD))
     # send message to switch
     self.connection.send(msg_arp)
 
-
+    # the drop strategy
+    msg_refuse = of.ofp_flow_mod()
+    msg_refuse.match.dl_type = 0x0800
+    msg_refuse.priority = 1
+    self.connection.send(msg_refuse)
 
   def _handle_PacketIn (self, event):
     """
@@ -72,11 +73,11 @@ class Firewall (object):
 
 
 
-  def launch ():
-    """
-    Starts the component
-    """
-    def start_switch (event):
-      log.debug("Controlling %s" % (event.connection,))
-      Firewall(event.connection)
-    core.openflow.addListenerByName("ConnectionUp", start_switch)
+def launch ():
+  """
+  Starts the component
+  """
+  def start_switch (event):
+    log.debug("Controlling %s" % (event.connection,))
+    Firewall(event.connection)
+  core.openflow.addListenerByName("ConnectionUp", start_switch)

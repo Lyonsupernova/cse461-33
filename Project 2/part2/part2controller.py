@@ -29,7 +29,7 @@ class Firewall (object):
     msg_icmp = of.ofp_flow_mod()
     # set the protocol as icmp
     msg_icmp.match.nw_proto = 1
-    msg_icmp.priority = 3
+    msg_icmp.priority = 33003
     # set the address as ipv4
     msg_icmp.match.dl_type = 0x0800
     # send action
@@ -44,7 +44,7 @@ class Firewall (object):
     msg_arp.match.dl_type = 0x0806
     # send action
     # flooding the message to all ports
-    msg_arp.priority = 2
+    msg_arp.priority = 33002
     msg_arp.actions.append(of.ofp_action_output(port = of.OFPP_FLOOD))
     # send message to switch
     self.connection.send(msg_arp)
@@ -52,7 +52,7 @@ class Firewall (object):
     # the drop strategy
     msg_refuse = of.ofp_flow_mod()
     msg_refuse.match.dl_type = 0x0800
-    msg_refuse.priority = 1
+    msg_refuse.priority = 33001
     self.connection.send(msg_refuse)
 
   def _handle_PacketIn (self, event):

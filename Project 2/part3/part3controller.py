@@ -51,6 +51,18 @@ class Part3Controller (object):
      # flooding the message to all ports
     out_action = of.ofp_action_output(port = of.OFPP_FLOOD)
     # execute action
+    msg.priority = 33001
+    msg.match.dl_type = 0x0800
+    msg.actions.append(out_action)
+    # send message to switch
+    self.connection.send(msg)
+
+    msg = of.ofp_flow_mod()
+     # flooding the message to all ports
+    out_action = of.ofp_action_output(port = of.OFPP_FLOOD)
+    # execute action
+    msg.priority = 33002
+    msg.match.dl_type = 0x0806
     msg.actions.append(out_action)
     # send message to switch
     self.connection.send(msg)

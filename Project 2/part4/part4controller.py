@@ -223,4 +223,3 @@ def launch ():
   
   core.openflow.addListenerByName("ConnectionUp", start_switch)
 
-

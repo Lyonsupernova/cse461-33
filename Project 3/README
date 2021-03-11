@@ -1,0 +1,74 @@
+# CSE 461 - Group 33
+
+## Project 3
+###### Members:
+- Danyang Zhao, danyaz3
+- Qihuang Chen, cqh99
+- Lyons Lu, lyons124
+
+Instructions to reproduce the results:
+  TODO
+
+Answers to the questions:
+Part 2
+1. What is the average latency and its standard deviation when q=20 and q=100?
+
+When q=20, the average latency is 3.5880347777777786 and standard deviation is 1.239248161515237
+When q=100, the average latency is 8.537946055555556 and standard deviation is 1.8890834293395502
+
+
+2. Why do you see a difference in webpage fetch times with short and large router buffers?
+
+There will be no packet loss be detected until the queue is filled up. So in this case, the max queue
+size q = 100 will take a higher average latency time to fill up the queue size. When q = 20, the short router buffer will drop packets more quickily. Lots of packets waiting in the queue increase the overhead and drop packets in a small buffer will reduce the overhead.
+
+
+3. Bufferbloat can occur in other places such as your network interface card (NIC). Check the output of ifconfig eth0 on your VM. What is the (maximum) transmit queue length on the network interface reported by ifconfig? For this queue size, if you assume the queue drains at 100Mb/s, what is the maximum time a packet might wait in the queue before it leaves the NIC?
+
+The maximum transmit queue length on the network interface is 1000 packets. 
+MTU = 1500 bytes
+Latency = 1500 byte * 1000 packets / 100 Mb/s = 1500 * 8 * 1000 / 10^8 = 0.12s
+The latency will be 0.12s 
+
+
+4. How does the RTT reported by ping vary with the queue size? Describe the relation between the two.
+
+RTT_ping : RTT returned by ping
+RTT_ping has a positive linear relation with queue size, RTT_ping increases with the
+increase of queue_size. Longer queue size means more delay in the queue which increases
+the waiting time.
+RTT_Ping = RTT + qsize / bw_net
+
+
+5. Identify and describe two ways to mitigate the bufferbloat problem.
+
+a. reduce the buffer size (max_buffer_size), drop the packets quickily
+b. use Active Queue Management (AQM) and drops packets probabilistically instead of FIFO queue.
+
+
+Part 3
+1. What is the average latency and its standard deviation when q=20 and q=100?
+
+When q=20, the average latency is 2.2407767916666668 and standard deviation is 0.8132921363809962
+When q=100, the average latency is 2.0239827647058823 and standard deviation is 0.48910147609414756
+
+
+2. Compare the latency between q=20 and q=100 from Part 3. Which queue length gives a lower latency? How is this different from Part 2?
+
+q = 100 gives a lower average latency. However in part2, the smaller queue size (q = 20) gives a smaller latency.
+
+
+3. Do you see the difference in the queue size graphs from Part 2 and Part 3? Give a brief explanation for the result you see.
+
+In part3, the congestion algorithm using BBR to reduce the sending rate during the drain phase. When
+the packets are filling the buffer, there will be no overwhelming packeting waiting time wasted.
+Reno changes the cwnd size according to the package loss while BBR changes the cwnd from measuring the 
+bandwidth and RTT because the packet loss might be caused by the increase of buffer size.
+BBR using probe_RTT to detect the RTT_min to ensure the low latency of network.
+
+
+4. Do you think we have solved bufferbloat problem? Explain your reasoning.
+
+Yes, I think we solved the buffeerbloat problem because Reno changes the cwnd size according to the package loss while BBR changes the cwnd from measuring the 
+bandwidth and RTT because the packet loss might be caused by the increase of buffer size. And using congestion
+algorithm like bbr takes a lower latency for a large queue size than smaller one.

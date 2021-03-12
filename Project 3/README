@@ -60,8 +60,8 @@ q = 100 gives a lower average latency. However in part2, the smaller queue size 
 
 3. Do you see the difference in the queue size graphs from Part 2 and Part 3? Give a brief explanation for the result you see.
 
-In part3, the congestion algorithm using BBR to reduce the sending rate during the drain phase. When
-the packets are filling the buffer, there will be no overwhelming packeting waiting time wasted.
+Yes, bbr-buffer-q100's buffer didn't get reach in the maximum buffer size, however reno-buffer-q100
+reaches in the maximum buffer size. 
 Reno changes the cwnd size according to the package loss while BBR changes the cwnd from measuring the 
 bandwidth and RTT because the packet loss might be caused by the increase of buffer size.
 BBR using probe_RTT to detect the RTT_min to ensure the low latency of network.
@@ -69,6 +69,7 @@ BBR using probe_RTT to detect the RTT_min to ensure the low latency of network.
 
 4. Do you think we have solved bufferbloat problem? Explain your reasoning.
 
-Yes, I think we solved the buffeerbloat problem because Reno changes the cwnd size according to the package loss while BBR changes the cwnd from measuring the 
-bandwidth and RTT because the packet loss might be caused by the increase of buffer size. And using congestion
-algorithm like bbr takes a lower latency for a large queue size than smaller one.
+No, BBR can only mitigate the problem of bufferbloat but not fully solve it.
+bbr-buffer-q20 still shows that the buffer size can still reach the maximum buffer size so the 
+congestion still existes in our network.
+The total data rate was not correctly set up, so the bufferbloat problem didn't get fully solved.
